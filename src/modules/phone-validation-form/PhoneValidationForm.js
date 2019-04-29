@@ -1,5 +1,5 @@
 import React from 'react';
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { parsePhoneNumberFromString, AsYouType } from 'libphonenumber-js';
 
 class PhoneValidationForm extends React.Component {
   constructor(props) {
@@ -33,8 +33,17 @@ class PhoneValidationForm extends React.Component {
   handleChange = (event) => {
     const { id, value } = event.target;
 
+    let formattedValue;
+    if (id === 'phoneNumber') {
+      const { countryCode } = this.state;
+
+      formattedValue = new AsYouType(countryCode).input(value);
+    } else {
+      formattedValue = value.toUpperCase();
+    }
+
     this.setState({
-      [id]: value.toUpperCase()
+      [id]: formattedValue
     }, this.validateInput);
   };
 
