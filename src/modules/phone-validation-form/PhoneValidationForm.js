@@ -1,5 +1,5 @@
 import React from 'react';
-import ParseNumberFormat from 'google-libphonenumber';
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
 class PhoneValidationForm extends React.Component {
   constructor(props) {
@@ -9,27 +9,22 @@ class PhoneValidationForm extends React.Component {
       countryCode: '',
       phoneNumber: '',
       isValidNumber: false,
-      isPossibleNumber: false,
       formattedValue: ''
     };
-
-    this.phoneUtil = ParseNumberFormat.PhoneNumberUtil.getInstance();
   }
 
   validateInput = () => {
     const { countryCode, phoneNumber } = this.state;
 
-    try {
-      const number = this.phoneUtil.parse(phoneNumber, countryCode);
+    const number = parsePhoneNumberFromString(phoneNumber, countryCode);
+    if (number) {
       this.setState({
-        isValidNumber: this.phoneUtil.isValidNumber(number),
-        isPossibleNumber: this.phoneUtil.isPossibleNumber(number),
-        formattedValue: `+${number.getCountryCode()} ${this.phoneUtil.format(number, ParseNumberFormat.E164)}`
+        isValidNumber: number.isValid(),
+        formattedValue: number.format('E.164')
       });
-    } catch {
+    } else {
       this.setState({
         isValidNumber: false,
-        isPossibleNumber: false,
         formattedValue: ''
       });
     }
